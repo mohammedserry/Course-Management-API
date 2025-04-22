@@ -29,13 +29,33 @@ const getCourse = asyncWrapper(async (req, res, next) => {
 });
 
 const addCourse = asyncWrapper(async (req, res, next) => {
+  const {
+    title,
+    description,
+    price,
+    image,
+    startDate,
+    endDate,
+    createdAt,
+    updatedAt,
+  } = req.body;
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = appError.create(errors.array(), 400, httpStatusText.ERROR);
     return next(error);
   }
 
-  const newCourse = new Course(req.body);
+  const newCourse = new Course({
+    title,
+    description,
+    price,
+    image: req.file && req.file.filename ? req.file.filename : "course.jpg",
+    startDate,
+    endDate,
+    createdAt,
+    updatedAt,
+  });
   await newCourse.save();
 
   res
